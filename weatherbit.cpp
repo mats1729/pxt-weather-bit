@@ -19,7 +19,7 @@
 #include "pxt.h"
 #include <cstdint>
 #include <math.h>
-#include <CriticalSectionLock.h>
+
 
 using namespace pxt;
 
@@ -42,20 +42,6 @@ namespace weatherbit {
         for (volatile uint16_t i = 0; i < 600; i++);
         CriticalSectionLock::disable();
         return b;
-    }
-
-    void sendZero() {
-        P12.setDigitalValue(0);
-        for (volatile uint8_t i = 1; i < 75; i++);
-        P12.setDigitalValue(1);
-        for (volatile uint8_t i = 1; i < 6; i++);
-    }
-
-    void sendOne() {
-        P12.setDigitalValue(0);
-        for (volatile uint8_t i = 1; i < 1; i++);
-        P12.setDigitalValue(1);
-        for (volatile uint8_t i = 1; i < 80; i++);
     }
 
     void writeBit(int b) {
@@ -100,7 +86,7 @@ namespace weatherbit {
         volatile int i;
         P12.setDigitalValue(0);
         P12.setDigitalValue(1);
-        for (i = 1; i < 20; i++);
+        for (i = 1; i < 15; i++); // Changed from 20 to 15 for more robust read.
         int b = P13.getDigitalValue();
         for (i = 1; i < 60; i++);
         return b;
@@ -174,7 +160,7 @@ namespace weatherbit {
         memcpy((uint8_t *) &digP9, ptr + 16, 2);
 
         // Do the compensation
-        int64_t firstConv = ((int64_t) tFine) - 128000;
+        int64_t firstConv = ((int64_t) tFine) - 128000; /* Changed from 12800 to 128000 to get correct result.
         int64_t secondConv = firstConv * firstConv * (int64_t)digP6;
         secondConv = secondConv + ((firstConv*(int64_t)digP5)<<17);
         secondConv = secondConv + (((int64_t)digP4)<<35);
