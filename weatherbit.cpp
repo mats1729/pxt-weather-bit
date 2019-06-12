@@ -158,7 +158,7 @@ namespace weatherbit {
         memcpy((uint8_t *) &digP9, ptr + 16, 2);
 
         // Do the compensation
-        int64_t firstConv = ((int64_t) tFine) - 128000; /* Changed from 12800 to 128000 to get correct result.
+        int64_t firstConv = ((int64_t) tFine) - 128000; // Changed from 12800 to 128000 to get correct result.
         int64_t secondConv = firstConv * firstConv * (int64_t)digP6;
         secondConv = secondConv + ((firstConv*(int64_t)digP5)<<17);
         secondConv = secondConv + (((int64_t)digP4)<<35);
