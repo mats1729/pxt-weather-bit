@@ -56,7 +56,10 @@ namespace weatherbit {
 // main() runs in its own thread in the OS
 MicroBitPin P12=uBit.io.P12;
 MicroBitPin P13= uBit.io.P13;
-
+    
+    int read_time;
+    Timer tictoc;
+    
     uint8_t init() {
         P12.setDigitalValue(0);
         DELAY(INIT_HOLD0);
@@ -111,9 +114,14 @@ MicroBitPin P13= uBit.io.P13;
     int readByte() {
         int byte = 0;
         int i;
+        tictoc.start();
         for (i = 0; i < 8; i++) {
             byte = byte | readBit() << i;
         };
+        tictoc.stop();
+        char buff[10];
+        sprintf(buff, " %d us\n", tictoc.read_us());
+        uBit.display.scroll(buff, 200);
         return byte;
     }
 
