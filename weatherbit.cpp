@@ -97,14 +97,38 @@ MicroBitPin P13= uBit.io.P13;
         }
     }
 
-    int readBit() {
-        volatile int i;
+        int readBit() {
+        int s,b;
         P12.setDigitalValue(0);
         /* READ_HOLD0 is too short for wait_us */
         P12.setDigitalValue(1);
-        DELAY(READ_AFTER);
-        int b = P13.getDigitalValue();
+        //DELAY(READ_AFTER);
+        s = P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        b = P13.getDigitalValue();
+        s = s|b;
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
         DELAY(READ_SLOT - READ_AFTER);
+        uBit.display.scroll(s);
         return b;
     }
 
