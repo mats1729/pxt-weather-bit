@@ -98,7 +98,7 @@ MicroBitPin P13= uBit.io.P13;
     }
 
         int readBit() {
-        uint32_t s,b;
+        int32_t s,b;
         P12.setDigitalValue(0);
         /* READ_HOLD0 is too short for wait_us */
         P12.setDigitalValue(1);
