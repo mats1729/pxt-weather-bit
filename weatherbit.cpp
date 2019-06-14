@@ -114,6 +114,7 @@ MicroBitPin P13= uBit.io.P13;
     int readByte() {
         int byte = 0;
         int i;
+        tictoc.reset();
         tictoc.start();
         for (i = 0; i < 8; i++) {
             byte = byte | readBit() << i;
