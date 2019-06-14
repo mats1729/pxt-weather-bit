@@ -61,6 +61,7 @@ MicroBitPin P13= uBit.io.P13;
     Timer tictoc;
     
     uint8_t init() {
+        P12.setPull(PullUp);
         P12.setDigitalValue(0);
         DELAY(INIT_HOLD0);
         P12.setDigitalValue(1);
@@ -85,6 +86,7 @@ MicroBitPin P13= uBit.io.P13;
 
     void writeByte(int byte) {
         int i;
+        P12.setPull(PullUp);
         for (i = 0; i < 8; i++) {
             if (byte & 1) {
                 writeBit(1);
@@ -114,6 +116,7 @@ MicroBitPin P13= uBit.io.P13;
     int readByte() {
         int byte = 0;
         int i;
+        P12.setPull(PullUp);
         tictoc.reset();
         tictoc.start();
         for (i = 0; i < 8; i++) {
