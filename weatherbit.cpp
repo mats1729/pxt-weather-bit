@@ -96,6 +96,7 @@ namespace weatherbit {
         }
     }
 
+#if 0
     int readBit() {
         volatile int i;
         P12.setDigitalValue(0);
@@ -105,7 +106,43 @@ namespace weatherbit {
         for (i = 1; i < 60; i++);
         return b;
     }
-
+#else
+        int readBit() {
+        volatile int i;
+        int s,b;
+        P12.setDigitalValue(0);
+        P12.setDigitalValue(1);
+        s = P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        b = P13.getDigitalValue();
+        s = s|b;
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        s<<=1;
+        s = s|P13.getDigitalValue();
+        for (i = 1; i < 60; i++);
+        uBit.display.scroll("B=");
+        uBit.display.scroll(s);
+        uBit.display.scroll(";");
+        return b;
+    }
+#endif
     int convert() {
         volatile int i;
         int j;
