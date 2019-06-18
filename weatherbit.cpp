@@ -139,6 +139,8 @@ namespace weatherbit {
         int s;
         P12.setDigitalValue(0);
         P12.setDigitalValue(1);
+        s = P13.getDigitalValue();
+        s<<=1;
         for (i = 1; i < 10; i++);
         b = P13.getDigitalValue();
         for (i = 1; i < 60; i++);
