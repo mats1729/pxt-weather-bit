@@ -137,9 +137,9 @@ namespace weatherbit {
         volatile int i;
         P12.setDigitalValue(0);
         P12.setDigitalValue(1);
-        DELAY(READ_AFTER);
+        for (i = 1; i < 10; i++);
         int b = P13.getDigitalValue();
-        DELAY(READ_SLOT - READ_AFTER);
+        for (i = 1; i < 60; i++);
         return b;
     }
 
