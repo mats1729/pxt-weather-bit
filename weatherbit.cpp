@@ -44,7 +44,7 @@ namespace weatherbit {
         uBit.display.scroll("I");
         uBit.display.scroll(s);
         uBit.display.scroll(",");
-        uBit.display.scroll(st);
+        uBit.display.scroll(t);
         uBit.display.scroll(";");
         return b;
     }
@@ -80,7 +80,7 @@ namespace weatherbit {
         uBit.display.scroll("W");
         uBit.display.scroll(s);
         uBit.display.scroll(",");
-        uBit.display.scroll(st);
+        uBit.display.scroll(t);
         uBit.display.scroll(";");
 
     }
