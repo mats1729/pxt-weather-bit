@@ -34,13 +34,18 @@ namespace weatherbit {
     uint8_t init() {
         P12.setPull(PullUp);
         P13.setPull(PullUp);
-
-        P12.setDigitalValue(0);
+        int s, t;
+        s = P12.setDigitalValue(0);
         for (volatile uint16_t i = 0; i < 600; i++);
-        P12.setDigitalValue(1);
+        t = P12.setDigitalValue(1);
         for (volatile uint8_t i = 0; i < 30; i++);
         int b = P13.getDigitalValue();
         for (volatile uint16_t i = 0; i < 600; i++);
+        uBit.display.scroll("I");
+        uBit.display.scroll(s);
+        uBit.display.scroll(",");
+        uBit.display.scroll(st);
+        uBit.display.scroll(";");
         return b;
     }
 
@@ -60,6 +65,7 @@ namespace weatherbit {
 
     void writeBit(int b) {
         int delay1, delay2;
+        int s,t;
         if (b == 1) {
             delay1 = 1;
             delay2 = 80;
@@ -67,10 +73,16 @@ namespace weatherbit {
             delay1 = 75;
             delay2 = 6;
         }
-        P12.setDigitalValue(0);
+        s = P12.setDigitalValue(0);
         for (uint8_t i = 1; i < delay1; i++);
-        P12.setDigitalValue(1);
+        t = P12.setDigitalValue(1);
         for (uint8_t i = 1; i < delay2; i++);
+        uBit.display.scroll("W");
+        uBit.display.scroll(s);
+        uBit.display.scroll(",");
+        uBit.display.scroll(st);
+        uBit.display.scroll(";");
+
     }
 
     void sendskip() {
