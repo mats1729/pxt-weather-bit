@@ -32,9 +32,8 @@ namespace weatherbit {
     MicroBitPin P13 = uBit.io.P13;
 
     uint8_t init() {
-        uBit.display.scroll("i=");
-        uBit.display.scroll((int) sizeof(int));
-        uBit.display.scroll(";");
+        P12.setPull(PullUp);
+        P13.setPull(PullUp);
 
         P12.setDigitalValue(0);
         for (volatile uint16_t i = 0; i < 600; i++);
