@@ -20,7 +20,6 @@
 #include <cstdint>
 #include <math.h>
 
-
 using namespace pxt;
 
 // v0 backward compat support
@@ -29,68 +28,61 @@ using namespace pxt;
 #endif
 
 namespace weatherbit {
-    // 1-wire protocol timings in microseconds
-#define INIT_HOLD0 600 /* min 480, max 960 */
-#define INIT_WAIT 60 /* min 15, max 60 */
-#define INIT_READ_AFTER 10 /* when to read the presence signal. it can be read 
-                              at least for 60 us and at most for 240 us */
-#define INIT_RX 600 /* min 480, includes INIT_WAIT and INIT_READ_AFTER */
-#define WRITE0_HOLD0 70 /* > 60, < 120 */
-#define WRITE1_HOLD0  2 /* > 1, << 15 */
-#define WRITE_SLOT 60 /* min 60, includes WRITE?_HOLD0 */
-#define READ_HOLD0 2 /* > 1, << 15 */
-#define READ_AFTER 14 /* >> 1, max 15, includes READ_HOLD0 */
-#define READ_SLOT 60 /* min 60, includes READ_HOLD0 */
-#define SLOT_RECOVERY 1 /* min 1 */
+    MicroBitPin P12 = uBit.io.P12;
+    MicroBitPin P13 = uBit.io.P13;
 
-// Miceobit operation times in us
-#define IO_TIME 3 /* The time to read or write a pin. */
-#define WAIT_DELAY 7 /* The number microseconds used by the wait function */
-
-// Delay command. The function wait_us cannot delay less than about 8 us.
-#define DELAY(period) wait_us(period - WAIT_DELAY)
-
-// Temperature conversion time in ms
-#define CONVERSION_TIME 750
-
-// main() runs in its own thread in the OS
-MicroBitPin P12=uBit.io.P12;
-MicroBitPin P13= uBit.io.P13;
-    
-    int read_time;
-    Timer tictoc;
-    
     uint8_t init() {
-        uBit.display.scroll("i=");
-        uBit.display.scroll((int) sizeof(int));
-        uBit.display.scroll(";");
-        P12.setPull(PullUp);
-        P13.setPull(PullUp);
         P12.setDigitalValue(0);
-        DELAY(INIT_HOLD0);
+        for (volatile uint16_t i = 0; i < 600; i++);
         P12.setDigitalValue(1);
-        DELAY(INIT_WAIT + INIT_READ_AFTER);
+        for (volatile uint8_t i = 0; i < 30; i++);
         int b = P13.getDigitalValue();
-        DELAY(INIT_RX - (INIT_WAIT + INIT_READ_AFTER));
-        return b; /* Should be zero */
+        for (volatile uint16_t i = 0; i < 600; i++);
+        return b;
+    }
+
+    void sendZero() {
+        P12.setDigitalValue(0);
+        for (volatile uint8_t i = 1; i < 75; i++);
+        P12.setDigitalValue(1);
+        for (volatile uint8_t i = 1; i < 6; i++);
+    }
+
+    void sendOne() {
+        P12.setDigitalValue(0);
+        for (volatile uint8_t i = 1; i < 1; i++);
+        P12.setDigitalValue(1);
+        for (volatile uint8_t i = 1; i < 80; i++);
     }
 
     void writeBit(int b) {
+        int delay1, delay2;
         if (b == 1) {
-            P12.setDigitalValue(0);
-            /* WRITE1_HOLD0 is too short for wait_us  */
-            P12.setDigitalValue(1);
-            DELAY(WRITE_SLOT - WRITE1_HOLD0);
+            delay1 = 1;
+            delay2 = 80;
         } else {
-            P12.setDigitalValue(0);
-            DELAY(WRITE0_HOLD0);
-            P12.setDigitalValue(1);
+            delay1 = 75;
+            delay2 = 6;
         }
+        P12.setDigitalValue(0);
+        for (uint8_t i = 1; i < delay1; i++);
+        P12.setDigitalValue(1);
+        for (uint8_t i = 1; i < delay2; i++);
+    }
+
+    void sendskip() {
+        writeBit(0);
+        writeBit(0);
+        writeBit(1);
+        writeBit(1);
+        writeBit(0);
+        writeBit(0);
+        writeBit(1);
+        writeBit(1);
     }
 
     void writeByte(int byte) {
         int i;
-        P12.setPull(PullUp);
         for (i = 0; i < 8; i++) {
             if (byte & 1) {
                 writeBit(1);
@@ -101,59 +93,35 @@ MicroBitPin P13= uBit.io.P13;
         }
     }
 
-        int readBit() {
-        int s,b;
+    int readBit() {
+        volatile int i;
         P12.setDigitalValue(0);
-        /* READ_HOLD0 is too short for wait_us */
         P12.setDigitalValue(1);
-        //DELAY(READ_AFTER);
-        s = P13.getDigitalValue();
-        s<<=1;
-        s = s|P13.getDigitalValue();
-        s<<=1;
-        s = s|P13.getDigitalValue();
-        s<<=1;
-        b = P13.getDigitalValue();
-        s = s|b;
-        s<<=1;
-        s = s|P13.getDigitalValue();
-        s<<=1;
-        s = s|P13.getDigitalValue();
-        s<<=1;
-        s = s|P13.getDigitalValue();
-        s<<=1;
-        s = s|P13.getDigitalValue();
-        s<<=1;
-        s = s|P13.getDigitalValue();
-        s<<=1;
-        s = s|P13.getDigitalValue();
-        s<<=1;
-        s = s|P13.getDigitalValue();
-        s<<=1;
-        s = s|P13.getDigitalValue();
-        DELAY(READ_SLOT - READ_AFTER);
-        uBit.display.scroll(s);
+        for (i = 1; i < 10; i++);
+        int b = P13.getDigitalValue();
+        for (i = 1; i < 60; i++);
         return b;
     }
 
     int convert() {
+        volatile int i;
+        int j;
         writeByte(0x44);
-        wait_ms(CONVERSION_TIME);
+        for (j = 1; j < 1000; j++) {
+            for (i = 1; i < 900; i++) {
+        };
+        if (readBit() == 1)
+            break;
+        };
+        return (j);
     }
 
     int readByte() {
         int byte = 0;
         int i;
-        P12.setPull(PullUp);
-        tictoc.reset();
-        tictoc.start();
         for (i = 0; i < 8; i++) {
             byte = byte | readBit() << i;
         };
-        tictoc.stop();
-        char buff[10];
-        sprintf(buff, " %d us\n", tictoc.read_us());
-        uBit.display.scroll(buff, 200);
         return byte;
     }
 
@@ -171,6 +139,7 @@ MicroBitPin P13= uBit.io.P13;
         int16_t temp = (b2 << 8 | b1);
         return temp * 100 / 16;
     }
+
 
     /*
     * Compensates the pressure value read from the register.  This done in C++ because
@@ -202,7 +171,7 @@ MicroBitPin P13= uBit.io.P13;
         memcpy((uint8_t *) &digP9, ptr + 16, 2);
 
         // Do the compensation
-        int64_t firstConv = ((int64_t) tFine) - 128000; // Changed from 12800 to 128000 to get correct result.
+        int64_t firstConv = ((int64_t) tFine) - 128000;
         int64_t secondConv = firstConv * firstConv * (int64_t)digP6;
         secondConv = secondConv + ((firstConv*(int64_t)digP5)<<17);
         secondConv = secondConv + (((int64_t)digP4)<<35);
