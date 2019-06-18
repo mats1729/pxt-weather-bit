@@ -99,16 +99,6 @@ namespace weatherbit {
 #if 0
     int readBit() {
         volatile int i;
-        P12.setDigitalValue(0);
-        P12.setDigitalValue(1);
-        for (i = 1; i < 10; i++);
-        int b = P13.getDigitalValue();
-        for (i = 1; i < 60; i++);
-        return b;
-    }
-#else
-        int readBit() {
-        volatile int i;
         int s,b;
         P12.setDigitalValue(0);
         P12.setDigitalValue(1);
@@ -142,7 +132,19 @@ namespace weatherbit {
         uBit.display.scroll(";");
         return b;
     }
+#else
+    int readBit() {
+        volatile int i;
+        P12.setDigitalValue(0);
+        /* READ_HOLD0 is too short for wait_us */
+        P12.setDigitalValue(1);
+        DELAY(READ_AFTER);
+        int b = P13.getDigitalValue();
+        DELAY(READ_SLOT - READ_AFTER);
+        return b;
+    }
 #endif
+
     int convert() {
         volatile int i;
         int j;
