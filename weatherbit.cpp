@@ -140,10 +140,15 @@ namespace weatherbit {
         P12.setDigitalValue(0);
         P12.setDigitalValue(1);
         s = P13.getDigitalValue();
-        s<<=1;
         for (i = 1; i < 10; i++);
         b = P13.getDigitalValue();
         for (i = 1; i < 60; i++);
+        uBit.display.scroll("s=");
+        uBit.display.scroll(s);
+        s<<=1;
+        uBit.display.scroll(",");
+        uBit.display.scroll(s);
+        uBit.display.scroll(";");
         return b;
     }
     
