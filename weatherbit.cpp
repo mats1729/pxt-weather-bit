@@ -61,7 +61,11 @@ MicroBitPin P13= uBit.io.P13;
     Timer tictoc;
     
     uint8_t init() {
+        uBit.display.scroll("i=");
+        uBit.display.scroll((int) sizeof(int));
+        uBit.display.scroll(";");
         P12.setPull(PullUp);
+        P13.setPull(PullUp);
         P12.setDigitalValue(0);
         DELAY(INIT_HOLD0);
         P12.setDigitalValue(1);
@@ -98,7 +102,7 @@ MicroBitPin P13= uBit.io.P13;
     }
 
         int readBit() {
-        int32_t s,b;
+        int s,b;
         P12.setDigitalValue(0);
         /* READ_HOLD0 is too short for wait_us */
         P12.setDigitalValue(1);
