@@ -43,20 +43,6 @@ namespace weatherbit {
         return b;
     }
 
-    void sendZero() {
-        P12.setDigitalValue(0);
-        for (volatile uint8_t i = 1; i < 75; i++);
-        P12.setDigitalValue(1);
-        for (volatile uint8_t i = 1; i < 6; i++);
-    }
-
-    void sendOne() {
-        P12.setDigitalValue(0);
-        for (volatile uint8_t i = 1; i < 1; i++);
-        P12.setDigitalValue(1);
-        for (volatile uint8_t i = 1; i < 80; i++);
-    }
-
     void writeBit(int b) {
         int delay1, delay2;
         if (b == 1) {
@@ -70,17 +56,6 @@ namespace weatherbit {
         for (uint8_t i = 1; i < delay1; i++);
         P12.setDigitalValue(1);
         for (uint8_t i = 1; i < delay2; i++);
-    }
-
-    void sendskip() {
-        writeBit(0);
-        writeBit(0);
-        writeBit(1);
-        writeBit(1);
-        writeBit(0);
-        writeBit(0);
-        writeBit(1);
-        writeBit(1);
     }
 
     void writeByte(int byte) {
