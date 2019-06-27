@@ -99,7 +99,7 @@ namespace weatherbit {
         volatile int i;
         P12.setDigitalValue(0);
         P12.setDigitalValue(1);
-        for (i = 1; i < 20; i++);
+        for (i = 1; i < 15; i++);
         int b = P13.getDigitalValue();
         for (i = 1; i < 60; i++);
         return b;
